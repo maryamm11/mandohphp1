@@ -1,0 +1,96 @@
+CREATE DATABASE IF NOT EXISTS car_rental_system;
+USE car_rental_system;
+
+-- جدول المستخدمين
+CREATE TABLE IF NOT EXISTS users (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    username VARCHAR(50) NOT NULL UNIQUE,
+    email VARCHAR(100) NOT NULL UNIQUE,
+    password VARCHAR(255) NOT NULL,
+    role ENUM('admin', 'client', 'premium') NOT NULL DEFAULT 'admin',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- جدول السيارات
+CREATE TABLE IF NOT EXISTS cars (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(100) NOT NULL,
+    model VARCHAR(50) NOT NULL,
+    type ENUM('Sedan', 'SUV', 'Crossover') NOT NULL,
+    price_per_day DECIMAL(10, 2) NOT NULL,
+    status ENUM('available', 'rented', 'maintenance') NOT NULL DEFAULT 'available',
+    image VARCHAR(255),
+    category ENUM('free', 'premium') NOT NULL DEFAULT 'free',
+    description TEXT,
+    features TEXT,
+    average_rating DECIMAL(3,2) DEFAULT 0.00
+);
+
+-- جدول طلبات التأجير
+CREATE TABLE IF NOT EXISTS rental_requests (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT NOT NULL,
+    car_id INT NOT NULL,
+    start_date DATE NOT NULL,
+    end_date DATE NOT NULL,
+    with_driver ENUM('yes', 'no') NOT NULL DEFAULT 'no',
+    total_price DECIMAL(10, 2) NOT NULL,
+    status ENUM('pending', 'approved', 'rejected', 'completed') NOT NULL DEFAULT 'pending',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT fk_rental_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+    CONSTRAINT fk_rental_car FOREIGN KEY (car_id) REFERENCES cars(id) ON DELETE CASCADE
+);
+
+-- حذف Triggers القديمة إذا كانت موجودة
+DROP TRIGGER IF EXISTS calculate_total_price;
+DROP TRIGGER IF EXISTS update_total_price;
+
+-- Trigger لحساب السعر الإجمالي قبل إضافة طلب جديد
+DELIMITER $$
+
+CREATE TRIGGER calculate_total_price BEFORE INSERT ON rental_requests
+FOR EACH ROW
+BEGIN
+    DECLARE daily_rate DECIMAL(10, 2);
+    DECLARE total_days INT;
+
+    -- الحصول على السعر اليومي للسيارة
+    SELECT price_per_day INTO daily_rate FROM cars WHERE id = NEW.car_id;
+
+    -- حساب عدد الأيام
+    SET total_days = DATEDIFF(NEW.end_date, NEW.start_date) + 1;
+
+    -- حساب السعر الإجمالي (الأيام × السعر اليومي)
+    SET NEW.total_price = total_days * daily_rate;
+END$$
+
+-- Trigger لحساب السعر الإجمالي قبل تحديث طلب
+CREATE TRIGGER update_total_price BEFORE UPDATE ON rental_requests
+FOR EACH ROW
+BEGIN
+    DECLARE daily_rate DECIMAL(10, 2);
+    DECLARE total_days INT;
+
+    -- الحصول على السعر اليومي للسيارة
+    SELECT price_per_day INTO daily_rate FROM cars WHERE id = NEW.car_id;
+
+    -- حساب عدد الأيام
+    SET total_days = DATEDIFF(NEW.end_date, NEW.start_date) + 1;
+
+    -- حساب السعر الإجمالي (الأيام × السعر اليومي)
+    SET NEW.total_price = total_days * daily_rate;
+END$$
+
+DELIMITER ;
+
+-- حذف المستخدم القديم إذا كان موجوداً
+DELETE FROM users WHERE email = 'admin@example.com';
+
+-- إضافة مستخدم الأدمن الافتراضي
+INSERT INTO users (username, email, password, role)
+VALUES (
+    'admin_user',
+    'admin@example.com',
+    'admin123', 
+    'admin'
+);
