@@ -24,12 +24,18 @@ if ($conn->connect_error) {
 // Set charset to utf8
 $conn->set_charset("utf8");
 
+// Temporarily disable foreign key checks
+@$conn->query("SET FOREIGN_KEY_CHECKS = 0");
+
 // Delete problematic tables that are not in sqlCode.sql
 // sqlCode.sql only creates: users, cars, rental_requests
 @$conn->query("DROP TABLE IF EXISTS offers");
 @$conn->query("DROP TABLE IF EXISTS role_change_requests");
 @$conn->query("DROP TABLE IF EXISTS rating");
 @$conn->query("DROP TABLE IF EXISTS contact_messages");
+
+// Re-enable foreign key checks
+@$conn->query("SET FOREIGN_KEY_CHECKS = 1");
 
 // Error reporting
 error_reporting(E_ALL);

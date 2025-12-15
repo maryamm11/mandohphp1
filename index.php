@@ -64,12 +64,21 @@ $cars_result = mysqli_query($conn, $query);
                     <?php while ($car = mysqli_fetch_assoc($cars_result)): ?>
                         <div class="card">
                             <div class="card-body">
-                                <h3><?= htmlspecialchars($car['name']) ?></h3>
-                                <p><?= htmlspecialchars($car['model']) ?></p>
-                                <p><strong>$<?= number_format($car['price_per_day'], 2) ?></strong> / day</p>
-                                <p>Type: <?= htmlspecialchars($car['type']) ?></p>
-                                <p>Status: <?= htmlspecialchars($car['status']) ?></p>
-                                <a href="rent_car.php?id=<?= $car['id'] ?>" class="btn btn-primary">Rent This Car</a>
+                                <?php if (!empty($car['image'])): ?>
+                                    <img src="images/<?= htmlspecialchars($car['image']) ?>" 
+                                         alt="<?= htmlspecialchars($car['name']) ?>">
+                                <?php else: ?>
+                                    <img src="images/wide range.jpg" 
+                                         alt="Car Image">
+                                <?php endif; ?>
+                                <div class="car-details">
+                                    <h3><?= htmlspecialchars($car['name']) ?></h3>
+                                    <p><?= htmlspecialchars($car['model']) ?></p>
+                                    <p><strong>$<?= number_format($car['price_per_day'], 2) ?></strong> / day</p>
+                                    <p>Type: <?= htmlspecialchars($car['type']) ?></p>
+                                    <p>Status: <?= htmlspecialchars($car['status']) ?></p>
+                                    <a href="rent_car.php?id=<?= $car['id'] ?>" class="btn btn-primary btn-rent">Rent This Car</a>
+                                </div>
                             </div>
                         </div>
                     <?php endwhile; ?>

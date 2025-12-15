@@ -97,6 +97,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <!-- Main Content -->
     <main>
         <div class="rental-request">
+            <?php if (!empty($car['image'])): ?>
+                <img src="images/<?= htmlspecialchars($car['image']) ?>" 
+                     alt="<?= htmlspecialchars($car['name']) ?>" 
+                     class="car-image">
+            <?php endif; ?>
+            
             <h2>Rent Car: <?= htmlspecialchars($car['name']) ?></h2>
             
             <?php if (!empty($success)): ?>
@@ -183,4 +189,3 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/js/bootstrap.bundle.min.js" integrity="sha384-k6d4wzSIapyDyv1kpU366/PK5hCdSbCRGRCMv+eplOQJWyd1fbcAu9OCUj5zNLiq" crossorigin="anonymous"></script>
 </body>
 </html>
-
