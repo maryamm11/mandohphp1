@@ -49,23 +49,6 @@ body {
     color: #dc3545;
 }
 
-.discounted-price {
-    color: #28a745;
-    font-weight: bold;
-    font-size: 1.2em;
-}
-
-.offer-badge {
-    background: #48A6A7;
-    color: white;
-    padding: 8px 15px;
-    border-radius: 40px;
-    font-weight: bold;
-    display: inline-block;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-    margin-bottom: 10px;
-}
-
 .date-picker {
     border: 1px solid #ced4da;
     border-radius: 5px;

@@ -136,114 +136,11 @@
 }
 
 
-/* Space between premium and regular sections */
-.premium-section {
-    margin-bottom: 40px;
-}
-
 .no-cars {
     text-align: center;
 }
 
-/* Reset filter */
-.reset-filter {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 10px;
-    flex-wrap: wrap;
-    flex-direction: row;
-    justify-content: center;
-    align-items: center;
-}
 
-/* Filter */
-.filter-car-model {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    gap: 10px;
-}
-
-.filter-car-details {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    gap: 10px;
-}
-
-/* Filter box styling */
-.filter-box {
-    display: none;
-}
-
-.filter-box.active {
-    display: flex;
-}
-
-.filter-box {
-    display: flex;
-    flex-direction: row;
-    width: 80%;
-    padding: 15px;
-    border: 1px solid #006A71;
-    background-color: #f9f9f9;
-    border-radius: 40px;
-    justify-content: center;
-    flex-wrap: wrap;
-    margin: 10px auto;
-}
-
-.toggle-btn {
-    padding: 10px 20px;
-    background-color: #006A71;
-    border-radius: 40px;
-    color: white;
-    border: none;
-    transition: background-color 0.3s ease;
-
-}
-
-.apply-button {
-    justify-content: center;
-    background-color: #006A71;
-    color: white;
-    padding: 12px 24px;
-    font-size: 16px;
-    border: none;
-    border-radius: 40px;
-    transition: background-color 0.3s ease;
-}
-
-.apply-button:hover {
-    background-color: #48A6A7;
-}
-
-.apply-button,
-.reset-button {
-    background-color: #006A71;
-    color: white;
-    padding: 5px 15px;
-    border-radius: 40px;
-    text-decoration: none;
-    margin-left: 10px;
-}
-.btn-submit-cont{
-    display: flex;
-    justify-content: center;
-}
-.reset-button {
-    display: inline-block;
-    padding: 10px 20px;
-    transition: background-color 0.3s ease;
-
-}
-.toggle-btn:hover ,
-.reset-button:hover {
-    background-color: #48A6A7;
-    transition: background-color 0.3s ease;
-
-}
 /* Category badges */
 .category-badge {
     padding: 3px 8px;
@@ -255,11 +152,6 @@
 .category-badge.free {
     background-color: #e0f7fa;
     color: #00796b;
-}
-
-.category-badge.premium {
-    background-color: #fff3e0;
-    color: #ef6c00;
 }
 
 /* Section headers */
@@ -296,34 +188,6 @@ main {
     font-weight: bold;
 }
 
-/* General input styling */
-.filter-box input[type="text"],
-.filter-box input[type="number"],
-.filter-box select {
-    width: 100%;
-    padding: 10px 15px;
-    border: 1px solid #006A71;
-    border-radius: 40px;
-    font-size: 14px;
-    transition: all 0.3s ease;
-    box-sizing: border-box;
-}
-
-/* Focus effect */
-.filter-box input:focus,
-.filter-box select:focus {
-    border-color: #006A71;
-    box-shadow: 0 0 0 2px #48A6A7;
-    outline: none;
-}
-
-@media (max-width: 768px) {
-    .filter-box input,
-    .filter-box select {
-        padding: 12px 15px;
-        font-size: 16px;
-    }
-}
 label{
     color: #006A71;
 }
