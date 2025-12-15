@@ -202,7 +202,7 @@ $rental_requests = mysqli_query($conn, $query);
                             <td>
                                 <form class="delete-form" method="POST" action="delete_car.php">
                                     <input type="hidden" name="car_id" value="<?= $car['id'] ?>">
-                                    <button type="submit" onclick="return confirm('Are you sure you want to delete this car?')">Delete</button>
+                                    <button type="submit" class="js-delete-car">Delete</button>
                                 </form>
                             </td>
                         </tr>
@@ -241,11 +241,11 @@ $rental_requests = mysqli_query($conn, $query);
                                         <div class="rental-actions">
                                             <form method="POST" action="approve_request.php">
                                                 <input type="hidden" name="request_id" value="<?= $request['id'] ?>">
-                                                <button type="submit" class="btn-approve">Approve</button>
+                                                <button type="submit" class="btn-approve js-approve">Approve</button>
                                             </form>
                                             <form method="POST" action="reject_request.php">
                                                 <input type="hidden" name="request_id" value="<?= $request['id'] ?>">
-                                                <button type="submit" class="btn-reject">Reject</button>
+                                                <button type="submit" class="btn-reject js-reject">Reject</button>
                                             </form>
                                         </div>
                                     <?php endif; ?>
@@ -296,33 +296,83 @@ $rental_requests = mysqli_query($conn, $query);
         </div>
     </footer>
     <script>
-        function showTab(tabId) {
-            // hide content of all tabs
-            document.querySelectorAll('.tab-content').forEach(tab => {
-                tab.classList.remove('active');
-            });
+/* ===============================
+    Tabs Logic
+================================ */
+function showTab(tabId) {
+    document.querySelectorAll('.tab-content').forEach(tab => {
+        tab.classList.remove('active');
+    });
 
-            // hide div.add-car 
-            document.querySelector('.add-car').style.display = 'none';
+    document.querySelector('.add-car').style.display = 'none';
+    document.getElementById(tabId).classList.add('active');
 
-            // show content of the selected tab
-            document.getElementById(tabId).classList.add('active');
+    if (tabId === 'add-car') {
+        document.querySelector('.add-car').style.display = 'block';
+    }
+}
 
-            // show add-car div if the selected tab is 'add-car'
-            if (tabId === 'add-car') {
-                document.querySelector('.add-car').style.display = 'block';
-            }
-        }
-        // Show the default tab on page load
-        window.onload = function() {
-            showTab('add-car');
-        };
-        // Handle file input change event
-        document.getElementById('image').addEventListener('change', function(e) {
-            const fileName = e.target.files[0] ? e.target.files[0].name : 'No file chosen';
-            document.querySelector('.file-name').textContent = fileName;
-        });
-    </script>
+window.onload = function () {
+    showTab('add-car');
+};
+
+/* ===============================
+    File Upload Name
+================================ */
+document.getElementById('image').addEventListener('change', function (e) {
+    const fileName = e.target.files[0] ? e.target.files[0].name : 'No file chosen';
+    document.querySelector('.file-name').textContent = fileName;
+});
+
+/* ===============================
+    Rental Actions (Approve / Reject)
+================================ */
+document.querySelectorAll('.js-approve').forEach(btn => {
+    btn.addEventListener('click', function (e) {
+        e.preventDefault();
+
+        if (!confirm('Are you sure you want to APPROVE this request?')) return;
+
+        handleAction(this, 'Approving...');
+        this.closest('form').submit();
+    });
+});
+
+document.querySelectorAll('.js-reject').forEach(btn => {
+    btn.addEventListener('click', function (e) {
+        e.preventDefault();
+
+        if (!confirm('Are you sure you want to REJECT this request?')) return;
+
+        handleAction(this, 'Rejecting...');
+        this.closest('form').submit();
+    });
+});
+/* ===============================
+    Delete Car
+================================ */
+document.querySelectorAll('.js-delete-car').forEach(btn => {
+    btn.addEventListener('click', function (e) {
+        e.preventDefault();
+
+        if (!confirm('Are you sure you want to DELETE this car?')) return;
+
+        handleAction(this, 'Deleting...');
+        this.closest('form').submit();
+    });
+});
+
+/* ===============================
+    Shared Button Handler
+================================ */
+function handleAction(button, text) {
+    button.disabled = true;
+    button.dataset.originalText = button.innerText;
+    button.innerText = text;
+    button.classList.add('loading');
+}
+</script>
+
     <!-- bootstrap js -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/js/bootstrap.bundle.min.js" integrity="sha384-k6d4wzSIapyDyv1kpU366/PK5hCdSbCRGRCMv+eplOQJWyd1fbcAu9OCUj5zNLiq" crossorigin="anonymous"></script>
 </body>

@@ -66,18 +66,18 @@ $cars_result = mysqli_query($conn, $query);
                             <div class="card-body">
                                 <?php if (!empty($car['image'])): ?>
                                     <img src="images/<?= htmlspecialchars($car['image']) ?>" 
-                                         alt="<?= htmlspecialchars($car['name']) ?>">
+                                        alt="<?= htmlspecialchars($car['name']) ?>">
                                 <?php else: ?>
                                     <img src="images/wide range.jpg" 
-                                         alt="Car Image">
+                                        alt="Car Image">
                                 <?php endif; ?>
                                 <div class="car-details">
                                     <h3><?= htmlspecialchars($car['name']) ?></h3>
                                     <p><?= htmlspecialchars($car['model']) ?></p>
                                     <p><strong>$<?= number_format($car['price_per_day'], 2) ?></strong> / day</p>
                                     <p>Type: <?= htmlspecialchars($car['type']) ?></p>
-                                    <p>Status: <?= htmlspecialchars($car['status']) ?></p>
-                                    <a href="rent_car.php?id=<?= $car['id'] ?>" class="btn btn-primary btn-rent">Rent This Car</a>
+                                    <p class="car-status <?= $car['status'] === 'available' ? 'available' : 'not-available' ?>">Status: <?= htmlspecialchars($car['status']) ?></p>
+                                    <a href="rent_car.php?id=<?= $car['id'] ?>" class="btn btn-rent js-rent-btn" data-status="<?= $car['status'] ?>">Rent This Car</a>
                                 </div>
                             </div>
                         </div>
@@ -128,5 +128,35 @@ $cars_result = mysqli_query($conn, $query);
 
     <!-- bootstrap js -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/js/bootstrap.bundle.min.js" integrity="sha384-k6d4wzSIapyDyv1kpU366/PK5hCdSbCRGRCMv+eplOQJWyd1fbcAu9OCUj5zNLiq" crossorigin="anonymous"></script>
+    <script>
+document.querySelectorAll('.js-rent-btn').forEach(btn => {
+    const status = btn.dataset.status;
+
+    // لو العربية مش متاحة
+    if (status !== 'available') {
+        btn.classList.add('btn-disabled');
+        btn.removeAttribute('href');
+        btn.setAttribute('title', 'This car is not available right now');
+        return;
+    }
+
+    // لو متاحة
+    btn.addEventListener('click', function (e) {
+        e.preventDefault();
+
+        if (!confirm('Do you want to rent this car?')) return;
+
+        // loading effect
+        btn.classList.add('btn-disabled');
+        btn.innerText = 'Redirecting...';
+
+        setTimeout(() => {
+            window.location.href = this.getAttribute('href');
+        }, 600);
+    });
+});
+</script>
+
+
 </body>
 </html>

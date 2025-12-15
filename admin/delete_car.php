@@ -9,7 +9,7 @@ if (!isLoggedIn() || !isAdmin()) {
 }
 
 // Get car ID from POST request
-$car_id = $_POST['car_id'];
+$car_id = intval($_POST['car_id']);
 
 // Delete car from the database
 $query = "DELETE FROM cars WHERE id = $car_id";

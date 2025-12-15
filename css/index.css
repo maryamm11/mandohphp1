@@ -94,19 +94,16 @@
 /* Buttons */
 .btn {
     display: inline-block;
-    padding: 12px 24px;
+    padding: 10px 22px;
     text-decoration: none;
-    border: none;
     cursor: pointer;
-    border-radius: 25px;
     font-weight: 600;
-    margin-top: 15px;
-    transition: all 0.3 ease;
 }
 
 .btn-rent:hover,
 .btn-details:hover {
     background-color: #48A6A7;
+    color: #fff;
     transition: all 0.4s ease;
 }
 
@@ -121,7 +118,6 @@
 .btn-details {
     background-color: #006A71;
     color: white;
-    padding: 5px 15px;
     border: none;
     border-radius: 40px;
     margin-top: 10px;
@@ -248,17 +244,6 @@
     transition: background-color 0.3s ease;
 
 }
-/* Rating stars styling */
-.rating-stars {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.rating-stars i {
-    margin-right: 2px;
-}
-
 /* Category badges */
 .category-badge {
     padding: 3px 8px;
@@ -341,4 +326,9 @@ main {
 }
 label{
     color: #006A71;
+}
+
+.btn-rent.disabled {
+    pointer-events: none;
+    opacity: 0.7;
 }

@@ -42,17 +42,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Insert rental request
     $user_id = $_SESSION['user']['id'];
     $insert_query = "INSERT INTO rental_requests (user_id, car_id, start_date, end_date, with_driver, total_price, status) 
-                     VALUES ($user_id, $car_id, '$start_date', '$end_date', '$with_driver', $total_price, 'pending')";
+                    VALUES ($user_id, $car_id, '$start_date', '$end_date', '$with_driver', $total_price, 'pending')";
     
     if (mysqli_query($conn, $insert_query)) {
-        // Update car status to rented
-        $update_car = "UPDATE cars SET status = 'rented' WHERE id = $car_id";
-        mysqli_query($conn, $update_car);
-        
-        $success = "Rental request submitted successfully! Total price: $" . number_format($total_price, 2);
-    } else {
-        $error = "Error submitting rental request. Please try again.";
-    }
+    // Update car status to rented
+    $update_car = "UPDATE cars SET status = 'rented' WHERE id = $car_id";
+    mysqli_query($conn, $update_car);
+    
+    $success = '<p class="fw-bold text-center m-0">Rental request submitted successfully!</p>';
+} else {
+    $error = "Error submitting rental request. Please try again.";
+}
 }
 ?>
 
@@ -95,43 +95,55 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     </header>
 
     <!-- Main Content -->
-    <main>
+<main>
+    <div class="container my-4 d-flex flex-column align-items-center">
+
+        <!-- success message -->
+        <?php if (!empty($success)): ?>
+            <div class="message success-message text-center">
+                <?= $success ?>
+            </div>
+        <?php endif; ?>
+
+        <!-- error message -->
+        <?php if (!empty($error)): ?>
+            <div class="message error-message text-center">
+                <?= $error ?>
+            </div>
+        <?php endif; ?>
+
         <div class="rental-request">
             <?php if (!empty($car['image'])): ?>
                 <img src="images/<?= htmlspecialchars($car['image']) ?>" 
-                     alt="<?= htmlspecialchars($car['name']) ?>" 
-                     class="car-image">
+                    alt="<?= htmlspecialchars($car['name']) ?>" 
+                    class="car-image mb-3">
             <?php endif; ?>
             
             <h2>Rent Car: <?= htmlspecialchars($car['name']) ?></h2>
             
-            <?php if (!empty($success)): ?>
-                <div class="success-message"><?= $success ?></div>
-            <?php endif; ?>
-            
-            <?php if (!empty($error)): ?>
-                <div class="error-message"><?= $error ?></div>
-            <?php endif; ?>
-            
-            <form method="POST" action="rent_car.php?id=<?= $car_id ?>">
+            <form method="POST" class="text-center" action="rent_car.php?id=<?= $car_id ?>">
                 <div class="mb-3">
                     <label for="start_date">Start Date:</label>
-                    <input type="date" name="start_date" id="start_date" required min="<?= date('Y-m-d') ?>">
+                    <input type="date" id="start_date" name="start_date" required min="<?= date('Y-m-d') ?>">
                 </div>
                 
                 <div class="mb-3">
                     <label for="end_date">End Date:</label>
-                    <input type="date" name="end_date" id="end_date" required min="<?= date('Y-m-d') ?>">
+                    <input type="date" id="end_date" name="end_date" required min="<?= date('Y-m-d') ?>">
                 </div>
                 
-                <div class="price-calculation" id="price-calculation">
-                    <p>Total Price: $<span id="total-price"><?= number_format($car['price_per_day'], 2) ?></span></p>
+                <div class="price-calculation mb-3">
+                    <p>Total Price: $<span id="totalPrice"><?= number_format($car['price_per_day'], 2) ?></span></p>
                 </div>
+
+                <span id="pricePerDay" data-price="<?= $car['price_per_day'] ?>" style="display:none;"></span>
                 
                 <button type="submit" class="submit-button">Submit Rental Request</button>
             </form>
         </div>
-    </main>
+    </div>
+</main>
+
 
     <!-- Footer Section -->
     <footer>
@@ -164,27 +176,69 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     </footer>
 
     <script>
-        const startDate = document.getElementById('start_date');
-        const endDate = document.getElementById('end_date');
-        const totalPriceSpan = document.getElementById('total-price');
-        const pricePerDay = <?= $car['price_per_day'] ?>;
-        
-        function calculatePrice() {
-            if (startDate.value && endDate.value) {
-                const start = new Date(startDate.value);
-                const end = new Date(endDate.value);
-                const days = Math.ceil((end - start) / (1000 * 60 * 60 * 24)) + 1;
-                
-                if (days > 0) {
-                    let total = days * pricePerDay;
-                    totalPriceSpan.textContent = total.toFixed(2);
-                }
-            }
+document.addEventListener('DOMContentLoaded', function () {
+
+    const form           = document.getElementById('rentForm');
+    const startDateInput = document.getElementById('start_date');
+    const endDateInput   = document.getElementById('end_date');
+    const totalPriceEl   = document.getElementById('totalPrice');
+    const pricePerDayEl  = document.getElementById('pricePerDay');
+    const submitBtn      = document.querySelector('.submit-button');
+
+    const pricePerDay = parseFloat(pricePerDayEl.dataset.price);
+
+    function calculatePrice() {
+        if (!startDateInput.value || !endDateInput.value) {
+            totalPriceEl.innerText = '0.00';
+            return;
         }
-        
-        startDate.addEventListener('change', calculatePrice);
-        endDate.addEventListener('change', calculatePrice);
-    </script>
+
+        const start = new Date(startDateInput.value);
+        const end   = new Date(endDateInput.value);
+
+        if (end < start) {
+            totalPriceEl.innerText = '0.00';
+            return;
+        }
+
+        const diffTime = end - start;
+        const days = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1;
+        const total = days * pricePerDay;
+
+        totalPriceEl.innerText = total.toFixed(2);
+    }
+
+    startDateInput.addEventListener('input', calculatePrice);
+    endDateInput.addEventListener('input', calculatePrice);
+
+    // ✅ الصح: submit على الفورم
+    form.addEventListener('submit', function (e) {
+
+        if (!startDateInput.value || !endDateInput.value) {
+            alert('Please select rental dates');
+            e.preventDefault();
+            return;
+        }
+
+        const start = new Date(startDateInput.value);
+        const end   = new Date(endDateInput.value);
+
+        if (end < start) {
+            alert('End date must be after start date');
+            e.preventDefault();
+            return;
+        }
+
+        submitBtn.disabled = true;
+        submitBtn.innerText = 'Processing...';
+    });
+
+});
+</script>
+
+
+
+
     
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/js/bootstrap.bundle.min.js" integrity="sha384-k6d4wzSIapyDyv1kpU366/PK5hCdSbCRGRCMv+eplOQJWyd1fbcAu9OCUj5zNLiq" crossorigin="anonymous"></script>
 </body>
